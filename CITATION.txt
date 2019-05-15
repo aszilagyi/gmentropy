@@ -1,0 +1,7 @@
+If you use this software and publish results, please cite:
+
+Gergely Gyimesi, Péter Závodszky, and András Szilágyi:
+Calculation of configurational entropy differences from conformational
+ensembles using Gaussian mixtures.
+J. Chem. Theory Comput., 13(1):29-41. (2017)
+DOI: 10.1021/acs.jctc.6b00837 PubMed: 27958758

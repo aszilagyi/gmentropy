@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv='content-type' value='text/html;charset=utf8'>
+  <meta name='generator' value='Ronn/v0.7.3 (http://github.com/rtomayko/ronn/tree/0.7.3)'>
+  <title>gmentro.py(1) - Calculate entropy by Gaussian mixture fitting</title>
+  <style type='text/css' media='all'>
+  /* style: man */
+  body#manpage {margin:0}
+  .mp {max-width:100ex;padding:0 9ex 1ex 4ex}
+  .mp p,.mp pre,.mp ul,.mp ol,.mp dl {margin:0 0 20px 0}
+  .mp h2 {margin:10px 0 0 0}
+  .mp > p,.mp > pre,.mp > ul,.mp > ol,.mp > dl {margin-left:8ex}
+  .mp h3 {margin:0 0 0 4ex}
+  .mp dt {margin:0;clear:left}
+  .mp dt.flush {float:left;width:8ex}
+  .mp dd {margin:0 0 0 9ex}
+  .mp h1,.mp h2,.mp h3,.mp h4 {clear:left}
+  .mp pre {margin-bottom:20px}
+  .mp pre+h2,.mp pre+h3 {margin-top:22px}
+  .mp h2+pre,.mp h3+pre {margin-top:5px}
+  .mp img {display:block;margin:auto}
+  .mp h1.man-title {display:none}
+  .mp,.mp code,.mp pre,.mp tt,.mp kbd,.mp samp,.mp h3,.mp h4 {font-family:monospace;font-size:14px;line-height:1.42857142857143}
+  .mp h2 {font-size:16px;line-height:1.25}
+  .mp h1 {font-size:20px;line-height:2}
+  .mp {text-align:justify;background:#fff}
+  .mp,.mp code,.mp pre,.mp pre code,.mp tt,.mp kbd,.mp samp {color:#131211}
+  .mp h1,.mp h2,.mp h3,.mp h4 {color:#030201}
+  .mp u {text-decoration:underline}
+  .mp code,.mp strong,.mp b {font-weight:bold;color:#131211}
+  .mp em,.mp var {font-style:italic;color:#232221;text-decoration:none}
+  .mp a,.mp a:link,.mp a:hover,.mp a code,.mp a pre,.mp a tt,.mp a kbd,.mp a samp {color:#0000ff}
+  .mp b.man-ref {font-weight:normal;color:#434241}
+  .mp pre {padding:0 4ex}
+  .mp pre code {font-weight:normal;color:#434241}
+  .mp h2+pre,h3+pre {padding-left:0}
+  ol.man-decor,ol.man-decor li {margin:3px 0 10px 0;padding:0;float:left;width:33%;list-style-type:none;text-transform:uppercase;color:#999;letter-spacing:1px}
+  ol.man-decor {width:100%}
+  ol.man-decor li.tl {text-align:left}
+  ol.man-decor li.tc {text-align:center;letter-spacing:4px}
+  ol.man-decor li.tr {text-align:right;float:right}
+  </style>
+</head>
+<!--
+  The following styles are deprecated and will be removed at some point:
+  div#man, div#man ol.man, div#man ol.head, div#man ol.man.
+
+  The .man-page, .man-decor, .man-head, .man-foot, .man-title, and
+  .man-navigation should be used instead.
+-->
+<body id='manpage'>
+  <div class='mp' id='man'>
+
+  <div class='man-navigation' style='display:none'>
+    <a href="#NAME">NAME</a>
+    <a href="#SYNOPSIS">SYNOPSIS</a>
+    <a href="#DESCRIPTION">DESCRIPTION</a>
+    <a href="#OPTIONS">OPTIONS</a>
+    <a href="#OUTPUT">OUTPUT</a>
+    <a href="#STOPPING-CRITERION">STOPPING CRITERION</a>
+    <a href="#WARNINGS">WARNINGS</a>
+    <a href="#CONVERGENCE-PROBLEMS">CONVERGENCE PROBLEMS</a>
+    <a href="#EXAMPLES">EXAMPLES</a>
+    <a href="#BATCH-JOBS-AND-REPEATED-RUNS">BATCH JOBS AND REPEATED RUNS</a>
+    <a href="#USAGE-FOR-ANGLE-DATA">USAGE FOR ANGLE DATA</a>
+    <a href="#AUTHOR">AUTHOR</a>
+    <a href="#CITATION">CITATION</a>
+    <a href="#WEB-SITE">WEB SITE</a>
+  </div>
+
+  <ol class='man-decor man-head man head'>
+    <li class='tl'>gmentro.py(1)</li>
+    <li class='tc'></li>
+    <li class='tr'>gmentro.py(1)</li>
+  </ol>
+
+  <h2 id="NAME">NAME</h2>
+<p class="man-name">
+  <code>gmentro.py</code> - <span class="man-whatis">Calculate entropy by Gaussian mixture fitting</span>
+</p>
+
+<h2 id="SYNOPSIS">SYNOPSIS</h2>
+
+<p><code>gmentro.py</code> [<code>-h</code>] [<code>-d</code>] [<code>-q</code>] [<code>-c</code>] [<code>-w</code>] [<code>-J</code> <var>J</var>] [<code>--order</code>
+<code>1</code>|<code>1.5</code>|<code>2</code>|<code>full</code>] [<code>--center</code>] [<code>--centeronly</code>] [<code>--stop</code> <code>cv</code>|<code>aicsd</code>]
+[<code>--overfit</code> <var>OVERFIT</var>] [<code>--sdelta</code> <var>SDELTA</var>] [<code>--emt</code> <var>EMT</var>] [<code>--cols</code> <var>COLS</var>] [<code>--slice</code>
+<var>SLICE</var>] [<code>--maxk</code> <var>MAXK</var>] [<code>--ncand</code> <var>NCAND</var>] [<code>--unit</code> <code>J</code>|<code>c</code>|<code>e</code>]
+[<code>--odir</code> <var>directory</var>] [<code>--version</code>] <var>datafilename</var></p>
+
+<h2 id="DESCRIPTION">DESCRIPTION</h2>
+
+<p><code>gmentro.py</code> estimates entropy by Gaussian mixture fitting. The data
+file named <var>datafilename</var> must contain an <var>n</var> x <var>d</var> matrix with <var>n</var>
+lines and <var>d</var> columns, representing <var>n</var> samples of <var>d</var> variables.
+Comment lines starting with <code>#</code> are allowed in the data file.</p>
+
+<h2 id="OPTIONS">OPTIONS</h2>
+
+<dl>
+<dt class="flush"><code>-h</code></dt><dd><p>Show help message and exit</p></dd>
+<dt class="flush"><code>-d</code></dt><dd><p>Turn on debug mode. Generates a lot of extra output.</p></dd>
+<dt class="flush"><code>-q</code></dt><dd><p>Quiet mode (no output to console, only to files)</p></dd>
+<dt class="flush"><code>-c</code></dt><dd><p>Console mode (no output to files, only to console)</p></dd>
+<dt class="flush"><code>-w</code></dt><dd><p>If output files already exist, overwrite them. Default: throw an error
+and exit if output files already exist.</p></dd>
+<dt class="flush"><code>-J</code> <var>J</var></dt><dd><p>Job number or job id string (for batch jobs or repeated runs; will set <code>-q</code>)</p></dd>
+<dt><code>--order</code>  <code>1</code>|<code>1.5</code>|<code>2</code>|<code>full</code></dt><dd><p>Order of approximation to be used. <code>1</code> only calculates 1-D
+entropies and sums them up. <code>1.5</code> calculates the first-order
+approximation and corrects it with the quasiharmonic mutual information.
+<code>2</code> also calculates pairwise mutual information values and subtracts their
+sum from the first-order entropy to obtain the second-order entropy.
+The sum of mutual information values will also be reported. <code>full</code> calculates a
+full-dimensional entropy. Default: <code>full</code></p></dd>
+<dt><code>--center</code></dt><dd><p>Perform distribution centering before calculating the entropy
+(default: no). This option assumes that the data are angles measured
+in degrees. Centering is always required for angle data unless the
+data in the data file are pre-centered.</p></dd>
+<dt><code>--centeronly</code></dt><dd><p>Perform distribution centering on the data and save the centered data;
+do not calculate entropy. If the input data file is &lt;data.dat>, the
+centered data will saved to &lt;data.centered.dat>.</p></dd>
+<dt><code>--stop</code> <code>cv</code>|<code>aicsd</code></dt><dd><p>Stopping criterion to use. <code>cv</code> refers to the cross-validation stopping criterion;
+<code>aicsd</code> uses a combination of the Akaike Information Criterion and entropy change
+upon adding another component (see <code>--sdelta</code>). See section STOPPING CRITERION below.
+Default: <code>cv</code>.</p></dd>
+<dt><code>--overfit</code> <var>OVERFIT</var></dt><dd><p>Continue the calculation after the stopping criterion is met to obtain <var>OVERFIT</var> extra
+Gaussian components. Default: 0. This option is only for testing purposes, and is likely to
+result in overfitting.</p></dd>
+<dt><code>--sdelta</code> <var>SDELTA</var></dt><dd><p>Calculation will stop when the entropy change in the
+last step is below <var>SDELTA</var>. Only used with <code>--stop</code> <code>aicsd</code>.
+See section STOPPING CRITERION below. Default: 0.2.</p></dd>
+<dt><code>--emt</code> <var>EMT</var></dt><dd><p>Convergence threshold for EM (Expectation Maximization) calculation
+(default: 1e-5). This affects how accurately the individual Gaussian
+components are fit to the data. A lower threshold will result in
+longer calculation.</p></dd>
+<dt><code>--cols</code> <var>COLS</var></dt><dd><p>Datafile columns to process as list of comma-separated ranges, e.g.
+<em>1-5,8,10-12</em>. The other columns will be ignored. Default: use all
+columns.</p></dd>
+<dt><code>--slice</code> <var>SLICE</var></dt><dd><p>A string in the format start:stop:step to be used to select lines to
+load from the datafile. It follows NumPy syntax, i.e. line numbering
+starts with zero, and the line with index "stop" is not loaded. Example:
+10:20:2 means that lines 10, 12, 14, 16 and 18 will be loaded (where line
+10 means the 11th line in the file). If any values are omitted, the default
+values will be used. Default start is zero, default stop is the end of the file,
+and default step is 1. The default slice is "::". This option can be used e.g.
+to skip the equilibration stage in a simulation, or to test the entropy
+calculation with different sample sizes obtained by changing the time between frames
+in a simulation trajectory or limiting the simulation time.</p></dd>
+<dt><code>--maxk</code> <var>MAXK</var></dt><dd><p>Maximum number of Gaussian components to be used in the mixture
+(default: 200). The algorithm will add components until convergence,
+but it will stop when <var>MAXK</var> is reached. Set <var>MAXK</var> to 1 to obtain a
+quasi-harmonic approximation where only a single Gaussian is fit.</p></dd>
+<dt><code>--ncand</code> <var>NCAND</var></dt><dd><p>Number of candidates to use in component search (default: 30). The
+algorithm will try this many candidate components to find the next
+component of the mixture. If it fails to find an appropriate
+component, it will report the failure but will repeat the search.
+After 100 repetitions (i.e. after trying 100*<var>NCAND</var> candidates),
+however, the program will give up and exit. In this case, the <var>NCAND</var>
+parameter could be increased for an even more thorough search. For
+easy cases, <var>NCAND</var> can also be decreased to speed up the run.</p></dd>
+<dt><code>--unit</code>  <code>J</code>|<code>c</code>|<code>e</code></dt><dd><p>Entropy unit to use: <code>J</code> for J/K/mol, <code>c</code> for cal/K/mol, <code>e</code> for
+natural units (nats). Default: <code>J</code>.</p></dd>
+<dt><code>--odir</code> <var>directory</var></dt><dd><p>Write output files to <var>directory</var> instead of the current directory.</p></dd>
+<dt><code>--version</code></dt><dd><p>Print the program's CRC32 checksum and exit. Used to identify program version.</p></dd>
+</dl>
+
+
+<h2 id="OUTPUT">OUTPUT</h2>
+
+<p>The program writes its output to the console, and it also generates 3
+output files whose names are formed from the data file name after
+cutting off its last 4 characters. For example, if the input file is
+named <em>datafile.dat</em> then the following output files will be
+generated:</p>
+
+<dl>
+<dt><code>datafile.gme.out</code></dt><dd><p>  Output file. It contains a header section but omits warnings.</p></dd>
+<dt><code>datafile.gme.log</code></dt><dd><p>  Log file. Same as output file but includes warnings and debug
+  messages. This is identical to what is written on the console.</p></dd>
+<dt><code>datafile.gme.npz</code></dt><dd><p>  The parameters of the fitted Gaussian mixture as a numpy npz
+  file. This can be loaded by numpy.</p></dd>
+</dl>
+
+
+<p>If the <code>-J</code> <var>J</var> option is specified to provide a job number then the name
+of each output file will include the job number after the <code>.gme.</code>
+part, i.e. <code>datafile.gme.</code><var>J</var><code>.out</code>.</p>
+
+<p>The <code>.out</code> and <code>.log</code> files will contain a header section where the
+program parameters are summarized. This is followed by the calculation
+results. Lines containing textual information will start with a <code>#</code>
+character for easier parsing (except in debug mode).</p>
+
+<p>For full-dimensional calculations, the output will be two or three columns,
+with the first column being the number of Gaussian components and the
+second column the calculated entropy with the given number of
+components. This can be used to plot the entropy vs. the number of
+components easily, e.g. with <code>gnuplot</code>. If the cross-validation stopping
+criterion is used (as by default), the second and third columns will contain
+the entropy as calculated from the training and testing set, respectively.
+Generally, the value in the second column should be used as the estimated entropy.</p>
+
+<h2 id="STOPPING-CRITERION">STOPPING CRITERION</h2>
+
+<p>By default, the program uses the cross-validation stopping criterion. This
+means that the input ensemble is randomly divided into two equal parts which will
+serve as training and testing sets. The Gaussian mixture fitting is performed on the
+training set and the log-likelihood is evaluated on the testing set upon adding each new
+Gaussian component. If this log-likelihood decreases upon adding a new component, the
+component is discarded and the calculation is stopped.</p>
+
+<p>The cross-validation stopping criterion is very robust, but because the input ensemble is
+divided randomly into two parts, the estimated entropy will be different upon running the
+program several times. You can calculate a mean and a standard deviation from the results.</p>
+
+<p>As an alternative to the cross-validation stopping criterion, the
+program can use a combination of two stopping criteria: the Akaike
+Information Criterion (AIC) and an entropy change criterion. This can
+be activated by using the <code>--stop aicsd</code> option. The program will stop
+when either of the two criteria is met.</p>
+
+<p>The AIC is defined by</p>
+
+<p><var>AIC</var> = 2*<var>npar</var> - 2*<var>LL</var></p>
+
+<p>where <var>LL</var> is the log-likelihood of the mixture with the given sample,
+and <var>npar</var> is the number of parameters in the mixture:</p>
+
+<p><var>npar</var> = <var>k</var>-1 + <var>k</var>*<var>d</var> + <var>k</var>*<var>d</var>*(<var>d</var>+1)/2</p>
+
+<p>which includes the number of weights (<var>k</var>-1), the means of the Gaussian
+components (<var>k</var>*<var>d</var> parameters), and the covariance matrices
+(<var>k</var>*<var>d</var>*(<var>d</var>+1)/2 parameters).</p>
+
+<p>The algorithm stops when the AIC increases compared to the previous
+step, i.e. if <var>AIC</var>(<var>k</var>+1) > <var>AIC</var>(<var>k</var>) then the <var>k</var>-component Gaussian mixture
+generated in the previous step will be accepted as the best estimate,
+and the associated entropy will be reported.</p>
+
+<p>The entropy change criterion will cause the program to stop when the
+calculated entropy differs by less than <var>SDELTA</var> from the one
+calculated in the previous step. The value of <var>SDELTA</var> can be set by
+the <code>--sdelta</code> <var>SDELTA</var> command line option; its default value is 0.1.
+Because this is a relatively small value, the AIC will often stop the
+program before the entropy change falls below this value.</p>
+
+<p>Note that the algorithm also stops if the log-likelihood does not
+increase upon performing partial EM on the newly added Gaussian
+component. Therefore, the program can detect, for example, if the
+sample was generated from only a single Gaussian distribution.</p>
+
+<h2 id="WARNINGS">WARNINGS</h2>
+
+<p>The program can display a number of warnings as it runs.
+The most common warnings are:</p>
+
+<dl>
+<dt><code>"x out of n likelihoods are too small"</code></dt><dd><p>This means that the calculated likelihood of some data points is below
+the smallest positive number that can be represented by the computer.
+This is normal for high-dimensional samples at the beginning of the
+calculation. The number of such points should decrease as the
+calculation progresses, and finally the warning should disappear. If
+the warning remains until the end, even before the final entropy
+value, the calculated entropy may not be sufficiently accurate. In
+this case, it is recommended that you use fewer variables, a larger
+sample, or a different stopping criterion.</p></dd>
+<dt><code>"No appropriate candidates found. Trying more candidates..."</code></dt><dd><p>The program is having a hard time finding appropriate candidates for
+new components, but it keeps trying.</p></dd>
+<dt><code>"Failed to find candidates. Result has not converged."</code></dt><dd><p>The program tried many times to find candidates but failed. The
+displayed result is not valid. You could try to increase the <var>NCAND</var>
+parameter and rerun. If this keeps failing, try a larger sample, fewer
+variables, or a different stopping criterion.</p></dd>
+<dt><code>"No parent can be split, sample too small"</code></dt><dd><p>This warning appears when so many components have been added that the
+number of points in each component has become too small and no more
+components can be added (a component must hold at least <var>d</var>+1 points)
+while the convergence criteria have not been met. In this case, the
+result is not acceptable. You must provide a larger sample or reduce
+the number of dimensions. This warning is unlikely to occur when the
+cross-validation stopping criterion is used.</p></dd>
+</dl>
+
+
+<h2 id="CONVERGENCE-PROBLEMS">CONVERGENCE PROBLEMS</h2>
+
+<p>Most convergence problems can be avoided by using the cross-validation
+stopping criterion (as by default). When using the <code>--stop aicsd</code>
+option, i.e. using a combination of AIC and entropy change stopping
+criteria, convergence problems may appear, especially with
+undersampled distributions. The Akaike Information Criterion still
+prevents convergence problems in most cases because it stops the
+algorithm before the number of components could grow too high.
+However, for small samples and/or small number of variables, the AIC
+may not be able to detect the optimum model, and the entropy change
+criterion will be dominant. In this case, if the <var>SDELTA</var> value
+specified with the <code>--sdelta</code> option is too small, the algorithm may
+fail to converge. For undersampled distributions, the program may keep
+adding more and more components, with the entropy decreasing nearly
+linearly until the calculation finally reports that no more components
+can be added. This typically indicates insufficient sampling; the data
+points probably occupy a random intricate shape in the
+high-dimensional space. To solve the problem, increase <var>SDELTA</var>.
+Alternatively, increase sample size or reduce the number of
+dimensions. In some cases, the ensemble may actually have an overly
+complex shape which cannot be approximated well by a Gaussian mixture
+with a reasonable number of components.</p>
+
+<h2 id="EXAMPLES">EXAMPLES</h2>
+
+<dl>
+<dt><code>gmentro.py datafile.dat</code></dt><dd><p>Calculate full-dimensional entropy on the sample in <code>datafile.dat</code>,
+using all default parameters.</p></dd>
+<dt><code>gmentro.py --center datafile.dat</code></dt><dd><p>Perform distribution centering on the data in <code>datafile.dat</code> before
+calculating the entropy. The data in the file must be angles measured
+in degrees. After the centering, the entropy will be calculated as
+usual.</p></dd>
+<dt><code>gmentro.py --centeronly datafile.dat</code></dt><dd><p>Perform distribution centering and save the data to
+<code>datafile.centered.dat</code> then exit. No entropy will be calculated. The
+centered data can then be used in further runs of <code>gmentro.py</code>.</p></dd>
+<dt><code>gmentro.py --maxk 1 datafile.dat</code></dt><dd><p>Calculate quasiharmonic entropy (entropy from a single Gaussian) for
+the sample in <code>datafile.dat</code></p></dd>
+<dt><code>gmentro.py --order 2 datafile.dat</code></dt><dd><p>Calculate a second-order approximation of the entropy for the sample
+in <code>datafile.dat</code>. All 1-D entropies and all 2-D entropies and mutual
+information values, as well as their sums will be reported.</p></dd>
+<dt><code>gmentro.py --cols 1-4,8-10 --every 3 datafile.dat</code></dt><dd><p>Calculate entropy only for the data file columns 1-4 and 8-10
+(ignoring all other columns), and only load every 3rd line from the
+data file.</p></dd>
+<dt><code>gmentro.py --aicsd --sdelta 0.1 --emt 1-e6 datafile.dat</code></dt><dd><p>Calculate full-dimensional entropy for <code>datafile.dat</code> using a combination of AIC
+and entropy change stopping criterion. Calculation will stop when either the AIC
+criterion is met or the entropy change upon adding a new component is less than 0.1 J/K/mol.
+Execution time may be longer and overfitting may occur.</p></dd>
+<dt><code>gmentro.py --ncand 50 datafile.dat</code></dt><dd><p>A full-dimensional entropy will be calculated with the number of
+candidate Gaussians tried in each step increased to 50 from the
+default value of 30. This may increase the chance of convergence for
+difficult cases.</p></dd>
+</dl>
+
+
+<h2 id="BATCH-JOBS-AND-REPEATED-RUNS">BATCH JOBS AND REPEATED RUNS</h2>
+
+<p>It is advisable to run the entropy calculation several times to see
+how much the results vary. To start a batch of 6 runs of <code>gmentro.py</code>
+on the same data, the following Bourne shell script could be used:</p>
+
+<pre><code>for i in 1 2 3 4 5 6 ; do
+  gmentro.py -J $i datafile.dat &amp;
+done
+</code></pre>
+
+<p>The output files will be named <code>datafile.gme</code>.<em>X</em>.<em>yyy</em> where <em>X</em> goes
+from 1 to 6 and <em>yyy</em> is one of <em>out</em>, <em>log</em>, and <em>npz</em>.</p>
+
+<p>The <code>-J</code> <var>J</var> option is also useful when <code>gmentro.py</code> is run several times
+on the same data with different parameters. By adding a job number or
+job id string, output files from different runs can have different
+names, thereby avoiding the overwriting of the output files from the
+previous run.</p>
+
+<h2 id="USAGE-FOR-ANGLE-DATA">USAGE FOR ANGLE DATA</h2>
+
+<p>Entropy calculation on angle data using Gaussian mixtures requires
+that the angle distributions be centered. The distribution centering
+can be performed using the <code>--center</code> command line option, which
+assumes that the angles in the data file are provided in degrees.
+Centering can be omitted if the angle data in the data file are
+already pre-centered. Pre-centering can be performed using the
+<code>--centeronly</code> option. Note that entropies calculated on non-centered
+angle data will be meaningless.</p>
+
+<h2 id="AUTHOR">AUTHOR</h2>
+
+<p>Written by Andras Szilagyi (szilagyi.andras@ttk.mta.hu). Much of the
+code was adapted from the Matlab code downloaded from
+<a href="http://lear.inrialpes.fr/people/verbeek/software.php" data-bare-link="true">http://lear.inrialpes.fr/people/verbeek/software.php</a>.
+The reference for the greedy EM method for Gaussian mixture fitting
+is: Verbeek JJ, Vlassis N, Krose B.: Efficient greedy learning of
+gaussian mixture models. Neural Comput. 2003 Feb;<span class="man-ref">15<span class="s">(2)</span></span>:469-85.
+Please contact the author with bug reports, comments, etc.</p>
+
+<h2 id="CITATION">CITATION</h2>
+
+<p>Please cite <code>gmentro.py</code> as follows:</p>
+
+<p>Gyimesi G, Zavodszky P, Szilagyi A:
+Calculation of configurational entropy differences from conformational ensembles using
+Gaussian mixtures.
+J. Chem. Theory Comput., (Just Accepted Manuscript)
+DOI: 10.1021/acs.jctc.6b00837</p>
+
+<h2 id="WEB-SITE">WEB SITE</h2>
+
+<p>The program can be downloaded from <a href="http://gmentropy.szialab.org" data-bare-link="true">http://gmentropy.szialab.org</a>.</p>
+
+
+  <ol class='man-decor man-foot man foot'>
+    <li class='tl'></li>
+    <li class='tc'>May 2019</li>
+    <li class='tr'>gmentro.py(1)</li>
+  </ol>
+
+  </div>
+</body>
+</html>
