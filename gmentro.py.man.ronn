@@ -359,11 +359,11 @@ Please contact the author with bug reports, comments, etc.
 
 Please cite `gmentro.py` as follows:
 
-Gyimesi G, Zavodszky P, Szilagyi A:
+Gyimesi G, Zavodszky P, Szilagyi A:\
 Calculation of configurational entropy differences from conformational ensembles using 
-Gaussian mixtures.
-J. Chem. Theory Comput., (Just Accepted Manuscript)
-DOI: 10.1021/acs.jctc.6b00837
+Gaussian mixtures.\
+J. Chem. Theory Comput., 13(1):29-41. (2017) DOI: 10.1021/acs.jctc.6b00837\
+PMID: [27958758](https://www.ncbi.nlm.nih.gov/pubmed/27958758)
 
 ## WEB SITE
 
