@@ -347,7 +347,7 @@ angle data will be meaningless.
 
 ## AUTHOR
 
-Written by Andras Szilagyi (szilagyi.andras@ttk.mta.hu). Much of the
+Written by Andras Szilagyi (szilagyi.andras at ttk.mta.hu). Much of the
 code was adapted from the Matlab code downloaded from
 [http://lear.inrialpes.fr/people/verbeek/software.php](http://lear.inrialpes.fr/people/verbeek/software.php).
 The reference for the greedy EM method for Gaussian mixture fitting
