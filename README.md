@@ -21,7 +21,7 @@ As a documentation, a manual page is provided in
 [gmentro.py.1.md](gmentro.py.1.md), which is also available [as a html
 file](gmentro.py.1.html) and a regular [manpage file](gmentro.py.1)
 (copy this file into a directory in your MANPATH and you'll be able to
-use man gmentro.py to display the manual page).
+use `man gmentro.py` to display the manual page).
 
 `xvg2dat.py` is a helper program to create a torsion angle trajectory
 file from Gromacs coordinate trajectories. See instructions in the
